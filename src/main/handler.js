@@ -1,6 +1,6 @@
 const url = require('url');
 const stringDecoder = require('string_decoder').StringDecoder;
-const router = require('./router');
+const router = require('./router/router');
 
 module.exports = (req,res) => {
 
@@ -9,6 +9,12 @@ module.exports = (req,res) => {
 
     const path = urlParsed.pathname;
     const pathClean = path.replace(/^\/+|\/+$/g, '');
+    let id = null;
+    let mainPath = pathClean;
+    if(pathClean.indexOf('/') > -1){ 
+        id = pathClean.split('/') [1];
+        mainPath = pathClean.split('/') [0];
+    }
     const decoder = new stringDecoder('utf-8');
     let buffer ='';
 
@@ -21,26 +27,27 @@ module.exports = (req,res) => {
             buffer = JSON.parse(buffer);
         }
         const data = {
-            path:pathClean, 
+            id: id,
+            path:mainPath, 
             method:req.method.toLowerCase(),
             query:urlParsed.query,
             header:req.headers,
             payload:buffer,
         }
         let handler;
-        if(pathClean === '') {
+        if(mainPath === '') {
             handler = router.main;
-        } else if(pathClean && router[pathClean]){
-            if(router[pathClean][data.method]) {
-            handler = router[pathClean][data.method];
+        } else if(mainPath && router[mainPath]){
+            if(router[mainPath][data.method]) {
+            handler = router[mainPath][data.method];
             } else {
-                handler = router[pathClean]
+                handler = router[mainPath]
             }
         } else {
             handler = router.notFound;
         }
         if(typeof handler==='function'){
-            handler(data, (statusCode = 200, payload = {})=> {
+            handler(data, callback = (statusCode = 200, payload = {})=> {
              const payloadClean = JSON.stringify(payload);
              res.setHeader('content-type', 'application/json');
              res.writeHead(statusCode);
