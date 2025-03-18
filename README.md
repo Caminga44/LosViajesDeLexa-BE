@@ -1,0 +1,1 @@
+Esta va a ser la parte del Backend para el proyecto del blog de los viajes de Lexa. 
