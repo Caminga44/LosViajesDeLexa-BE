@@ -1,5 +1,6 @@
 const url = require('url');
 const stringDecoder = require('string_decoder').StringDecoder;
+const router = require('./router')
 
 module.exports = (req,res) => {
 
@@ -35,14 +36,7 @@ module.exports = (req,res) => {
             header:req.headers,
             payload:buffer,
         }
-        const router = {
-            main: (data, callback)=>{
-                callback (200, {message: 'hello'});
-            },
-            notFound: (data, callback)=>{
-                callback (404, {message: 'not found'});
-            },
-        }
+       
         let handler;
         if(pathClean === '') {
             handler = router.main;
