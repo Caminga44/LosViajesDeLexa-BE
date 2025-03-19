@@ -26,17 +26,28 @@ module.exports = {
         })
     },
     put: (data, callback) =>{
-        const {id, nombre} = data.payload;
+        const {nombre} = data.payload;
+        const id = parseInt(data.id);
+        if(!nombre || isNaN(id)){
+            callback (400, {message: 'Asegurate que el nombre o id no sean nulos'});
+            return;
+        } else {
         connection.query ('UPDATE provincias SET nombre = ? WHERE id  = ?', [nombre, id], (err) =>{
             checkError(err);
             callback(200, {message: 'Provincia actualizada correctamente'})
-        })
+        })}
     },
     delete: (data, callback) => {
-        const {id} = data.payload;
-        connection.query('DELETE FROM provincias WHERE id = ?', [id],(err => {
-            checkError(err);
-            callback(200,{message: 'Provincia eliminada correctamente'});
-        }))
+        const id = parseInt(data.id);
+        if(isNaN(id)){
+            callback (400, {message: 'Asegurate que el nombre o id no sean nulos'});
+            return;
+        } else {
+            connection.query('DELETE FROM provincias WHERE id = ?', [id],(err => {
+                checkError(err);
+                callback(200,{message: 'Provincia eliminada correctamente'});
+            })
+            )
+        }
     }
 }
