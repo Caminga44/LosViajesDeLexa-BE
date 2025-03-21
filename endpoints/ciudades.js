@@ -2,7 +2,7 @@ const connection = require('./connection');
 
 function checkError(err) {
     if(err){
-        cancelIdleCallback(500, {message: 'Error en la base ded datos'})
+        callback (500, {message: 'Error en la base ded datos'})
         return;
     }
 }
@@ -35,7 +35,7 @@ module.exports = {
     },
     put: (data, callback) => {
         const {nombre} = data.payload;
-        const id = data.id;
+        const id = parseInt(data.id);
         if(!nombre || isNaN(id)){
             callback(400, {message: 'Asegurate que el nombre o id no sean nulos'});
             return;

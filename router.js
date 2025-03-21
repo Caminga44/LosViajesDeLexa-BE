@@ -1,5 +1,6 @@
 const provincias = require('./endpoints/provincias')
 const ciudades = require('./endpoints/ciudades')
+const comentarios = require('./endpoints/comentarios')
 module.exports ={
     main: (data, callback)=>{
         callback (200, {message: 'hello'});
@@ -9,4 +10,5 @@ module.exports ={
     },
     provincias,
     ciudades,
+    comentarios,
 }

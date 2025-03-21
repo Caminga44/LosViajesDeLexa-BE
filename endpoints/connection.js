@@ -33,6 +33,13 @@ connection.connect ((err) =>{
               console.log('Error al crear la tabla ciudades', err);
                 return;
             }
+            //, publicacionId INT, CONSTRAINT FK_PublicacionComentario FOREIGN KEY (publicacionId) REFERENCES publicaciones (id)
+    });
+    connection.query ('CREATE TABLE IF NOT EXISTS comentarios (id INT AUTO_INCREMENT PRIMARY KEY, texto VARCHAR(500))', (err) =>{
+        if(err){
+              console.log('Error al crear la tabla comentarios', err);
+                return;
+            }
     });
 
 
