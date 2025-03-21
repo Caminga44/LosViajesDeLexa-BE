@@ -9,10 +9,28 @@ function checkError(err) {
 
 module.exports = {
     get: (data, callback) =>{
-        connection.query ('SELECT * FROM provincias' , (err, rows) =>{
-          checkError(err);
-            callback (200, rows);
-        })
+        const {id} = data; //si en data existe id me lo guardas {}
+        if(id){
+            if(isNaN(parseInt(id))){
+                callback(400, {message: 'El id debe ser un número'});
+                return;
+            } else{
+                connection.query ('SELECT * FROM provincias WHERE id = ?', [id], (err, rows) => {
+                    checkError(err);
+                    if(rows.length === 0){
+                        callback (404, {message: 'Provincia no encontrada'});
+                        return;
+                    }else{
+                        callback (200, rows[0]);
+                    }
+                })
+            }
+        }else{
+            connection.query ('SELECT * FROM provincias' , (err, rows) =>{
+            checkError(err);
+                callback (200, rows);
+            })
+        }
     },
     post: (data, callback) => {
         const {nombre} = data.payload;
