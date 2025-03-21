@@ -41,7 +41,12 @@ connection.connect ((err) =>{
                 return;
             }
     });
-
+    connection.query('CREATE TABLE IF NOT EXISTS usuarios ( alias VARCHAR(20) PRIMARY KEY, clave VARCHAR (20))', (err) => {
+        if(err){
+            console.log('Error al crear la tabla usuarios', err);
+            return;
+        }
+    })
 
     console.log('Conectado a la base de datos');
 });
