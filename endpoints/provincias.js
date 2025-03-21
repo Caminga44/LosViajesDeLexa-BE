@@ -61,11 +61,10 @@ module.exports = {
             callback (400, {message: 'Asegurate que el nombre o id no sean nulos'});
             return;
         } else {
-            connection.query('DELETE FROM provincias WHERE id = ?', [id],(err => {
+            connection.query('DELETE FROM provincias WHERE id = ?', [id],(err) => {
                 checkError(err);
                 callback(200,{message: 'Provincia eliminada correctamente'});
             })
-            )
         }
     }
 }
