@@ -41,9 +41,15 @@ connection.connect ((err) =>{
                 return;
             }
     });
-    connection.query('CREATE TABLE IF NOT EXISTS usuarios ( alias VARCHAR(20) PRIMARY KEY, clave VARCHAR (20))', (err) => {
+    connection.query('CREATE TABLE IF NOT EXISTS usuarios (alias VARCHAR(20) PRIMARY KEY, clave VARCHAR (20))', (err) => {
         if(err){
             console.log('Error al crear la tabla usuarios', err);
+            return;
+        }
+    });
+    connection.query('CREATE TABLE IF NOT EXISTS publicaciones (id INT AUTO_INCREMENT PRIMARY KEY, img VARCHAR(500), text VARCHAR (500), fav BOOLEAN, provinciaId INT, ciudadId INT, comentarioId INT, CONSTRAINT FK_ProvinciaPublicacion FOREIGN KEY (provinciaId) REFERENCES provincias(id), CONSTRAINT FK_CiudadPublicacion FOREIGN KEY (ciudadId) REFERENCES ciudades(id), CONSTRAINT FK_ComentarioPublicacion FOREIGN KEY (comentarioId) REFERENCES comentarios(id))', (err) =>{
+        if(err){
+            console.log('Error al crear la tabla publicaciones', err);
             return;
         }
     })
