@@ -2,7 +2,7 @@ const connection = require('./connection');
 
 function checkError(err) {
     if(err){
-        callback (500, {message: 'Error en la base ded datos'})
+        callback(500, {message: 'Error en la base de datos'})
         return;
     }
 }
@@ -10,22 +10,40 @@ function checkError(err) {
 module.exports = {
     get: (data, callback) => {
         const {id} = data;
-        if(id) {
-            connection.query('SELECT * FROM ciudades WHERE id = ?', [id], (err, rows) =>{
-                checkError(err);
-                callback(200, rows[0]);
-            })
-            return;
-        }else{
-            connection.query('SELECT * FROM ciudades', (err, rows) => {
-                checkError(err),
-                callback(200,rows);
-            })}
+        connection.query('SELECT c.id, c.nombre, p.nombre AS provincia FROM provincias p INNER JOIN ciudades c ON p.id = c.provinciaId ORDER BY c.id', (err, rows) => {
+            checkError(err);
+            if(id){
+                if(isNaN(parseInt(id))){
+                    callback(400, {message: 'El id debe ser un número'});
+                    return;
+                } else {
+                    let city;
+                    rows.filter((ciudad) => {
+                        if(ciudad.id == id){connection.query('SELECT c.name, p.name FROM provincias p INNER JOIN ciudades c ON p.id = c.provinciaId WHERE c.id = ?', ciudad.id, (err, rows) => {
+                            checkError(err);
+                            city = {
+                                id: ciudad.id,
+                                name: ciudad.name,
+                                provincia: rows[0].name
+                            }
+                            if(city){
+                                return callback (200, city)
+                            } else {
+                                return callback (404, {message:'Ciudad no encontrada'})
+                            }
+                        });
+                        }
+                    })        
+                }
+            } else {
+                return callback(200, rows);
+            }
+        })
     },
     post: (data, callback) => {
         const {nombre} = data.payload;
         if(!nombre){
-            callback(400, {message: 'El nombre de la ciudad no puede ser nulo'});
+            callback(400, {message: 'El nombre de la ciudad no puede ser nulos'});
             return;
         }
         connection.query('INSERT INTO ciudades (nombre) VALUES (?)', [nombre], (err) => {
@@ -35,26 +53,28 @@ module.exports = {
     },
     put: (data, callback) => {
         const {nombre} = data.payload;
-        const id = parseInt(data.id);
-        if(!nombre || isNaN(id)){
-            callback(400, {message: 'Asegurate que el nombre o id no sean nulos'});
+        const id = data.id;
+        if(!nombre || !id){
+            callback(400, {message: 'Asegurate de que el nombre o el id no son nulos'});
             return;
-        }else{
-            connection.query ('UPDATE ciudades SET nombre = ? WHERE id =?', [nombre, id], (err) => {
-                checkError(err);
-                callback(200, {message:'Ciudad actualizada correctamente '})
-            })}
+        }
+        connection.query('UPDATE ciudades SET nombre = ? WHERE id = ?', [nombre, id], (err) => {
+            checkError(err);
+            callback(200, {message: 'Ciudad actualizada correctamente'});
+        })
     },
-    delete: (data, callback) =>{
-        const id = parseInt(data.id);
-        if(isNaN(id)){
-            callback(400, {message: ' Asegurate que el nombre o id no sean nulos'});
-            return;
-        }else{
-            connection.query('DELETE FROM ciudades WHERE id = ?', [id], (err) => {
-                checkError(err);
-                callback(200, {message: 'Ciudad eliminada correctamente'});
-            })
+    delete: (data, callback) => {
+        const id = data.id;
+        if(id){
+            if(isNaN(parseInt(id))){
+                callback(400, {message: 'El id debe ser un número'});
+                return;
+            } else {
+                connection.query('DELETE FROM ciudades WHERE id = ?', [id], (err) => {
+                    checkError(err);
+                    callback(200, {message: 'Ciudad eliminada correctamente'});
+                })
+            }
         }
     }
 }
