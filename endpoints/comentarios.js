@@ -11,11 +11,15 @@ module.exports = {
     get: (data, callback) => {
         const {id} = data;
         if(id){
-            connection.query('SELECT * FROM comentarios WHERE id = ?', [id], (err, rows) => {
+            if(NaN(parseInt(id))){
+                callback(400, {message:'El id debe ser un número'});
+                return;
+            }else{
+            connection.query('SELECT * FROM comentarios WHERE publicacionId = ?', [id], (err, rows) => {
                 checkError(err);
-                callback(200, rows[0]);
+                callback(200, rows);
             })
-            return;
+        }
         }else{
             connection.query('SELECT * FROM comentarios', (err, rows) =>{
                 checkError(err);
@@ -23,38 +27,40 @@ module.exports = {
             })}
     },
     post: (data, callback) => {
-        const {texto} = data.payload;
+        const {texto, id, user} = data.payload;
         if (!texto){
             callback (400, {message: 'El texto del comentario no puede ser nulo'})
             return;
         }
-        connection.query('INSERT INTO comentarios (texto) VALUES (?)', [texto], (err) =>{
+        connection.query('INSERT INTO comentarios (texto,publicacioneId,usuario) VALUES (?,?,?)', [texto, id, user], (err) =>{
             checkError(err);
             callback(201, {message:'Comentario creado correctamente'});
         })
     },
     put: (data, callback) => {
         const {texto} = data.payload;
-        const id = parseInt(data.id);
-        if(!texto || isNaN(id)){
+        const id = data.id;
+        if(!texto || isNaN(parseInt(id))){
             callback(400, {message: 'Asegurate que el texto o id no sean nulos'});
             return;
-        }else{
-            connection.query('UPDATE comentarios SET texto = ? WHERE id = ?', [texto, id], (err) =>{
+        }
+        connection.query('UPDATE comentarios SET texto = ? WHERE id = ?', [texto, id], (err) =>{
                 checkError(err);
-                callback(200, {message: ' Comentario actualizado correctamente'})
-            })}
+                callback(200, {message: 'Comentario actualizado correctamente'})
+            })
     },
     delete: (data, callback) => {
-        const id = parseInt(data.id);
-        if(isNaN(id)){
-            callback(400, {message: ' Asegurate que el texto o el id no sean nulos'});
+        const id = data.id;
+        if(id){
+          if(isNaN(parseInt(id))){ 
+            callback(400, {message: 'El id solo debe ser un número'});
             return;
-        }else{
-            connection.query('DELETE FROM comentarios where id = ?' , [id], (err) => {
+          }else{
+            connection.query('DELETE FROM comentarios WHERE id = ?' , [id], (err) => {
                 checkError(err);
                 callback(200, {message: 'Comentario eliminado correctamente'})
             })
         }
     }
+}
 }

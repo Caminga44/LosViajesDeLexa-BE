@@ -48,6 +48,7 @@ module.exports = (req,res) => {
        
         let handler;
 
+        console.log("<<<<<<<<<<<<<<<<<<<< ", method, mainPath,data)
         if(mainPath === '') {
             handler = router.main;
         } else if(mainPath && router[mainPath][method]){

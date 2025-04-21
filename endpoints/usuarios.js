@@ -2,26 +2,21 @@ const connection = require('./connection');
 
 function checkError(err){
     if(err){
-        cancelIdleCallback(500, {message: 'Error en la base de datos'})
+        callback(500, {message: 'Error en la base de datos'})
         return;
     }
 }
 
 module.exports = {
-    get: (data, callback) => {
+    get: (_, callback) => {
         connection.query('SELECT * FROM usuarios', (err, rows) => {
-            const {alias, clave} = data.payload;
             checkError(err);
-                if(!alias && !clave){
-                    callback(400, {message: 'Las dos credenciales son necesarias'});
-                    return;
-                }
-            rows.filter((usuario) => {
-                if(usuario.alias == alias && usuario.clave == clave){
-                    return callback(200, {message: 'Credenciales correctas'})
+            const result = rows.filter((usuario) => {
+                if(usuario.deleted != 1){
+                    return usuario;
                 }
             })
-            return callback(404, {message: 'Usuario no encontrado'})
+            return callback(200, result);
         })
     },
     post: (data,callback) => {
@@ -40,11 +35,12 @@ module.exports = {
             }else if(data.payload){
                 let find = false;
                 rows.filter((usuario) => {
-                    if(usuario.alias == data.payload.alias && usuario.clave == data.payload.clave){
-                        find = true;
-                        callback(200, usuario)
-                        return;
-                    }
+                   const user ={alias: data.payload.alias, clave: data.payload.clave}
+                   if(usuario.alias == user.alias && usuario.clave == data.payload.clave){
+                    find = true;
+                    callback(200, usuario)
+                    return;
+                   }
                 })
                 if(!find){
                     callback(404, {message: 'Usuario no encontrado'})
@@ -57,26 +53,22 @@ module.exports = {
         })
     },
     put: (data, callback) => {
-        const user = {alias: data.payload.alias, clave: data.payload.clave}
-        connection.query('UPDATE usuarios SET ? WHERE alias = ?', [user, user.alias], (err, _rows) =>{
+        const user = {alias: data.payload.alias, clave: data.payload.clave, admin: data.payload.admin}
+        const oldAlias = data.payload.oldAlias;
+        connection.query('UPDATE usuarios SET ? WHERE alias = ?', [user, oldAlias], (err, _rows) =>{
             if(err){
                 callback(500, {message: 'La conexión ha fallado'})
                 return;
             }else{
-                callback(201, {message: 'Se ha actualizado el usuario'})
-                return;
+                callback(204, {message: 'Se ha actualizado el usuario'})
             }
         })
     },
     delete: (data, callback) => {
         const {alias} = data.payload;
-        connection.query('DELETE FROM usuarios WHERE alias = ?', alias, (err, _rows) =>{
-            if(err){
-                callback(500, {message: 'La conexión ha fallado'})
-                    return;
-            }else{
-                callback(200, {message: 'Se ha eliminado el usuario'})
-            }
+        connection.query('UPDATE usuarios SET deleted = 1 WHERE nick = ?', alias, (err, _rows) =>{
+           checkError(err);
+           callback(200, {message: 'Se ha eliminado el usuario'})
         })
     }
 }
