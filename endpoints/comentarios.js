@@ -2,6 +2,7 @@ const connection = require('./connection');
 
 function checkError(err) {
     if(err){
+        console.log('>>>>>>>>>>>>>>>>>>>> ',err)
         callback (500, {message: 'Error en la base de datos'})
             return;
     }
@@ -32,7 +33,7 @@ module.exports = {
             callback (400, {message: 'El texto del comentario no puede ser nulo'})
             return;
         }
-        connection.query('INSERT INTO comentarios (texto,publicacionId,usuario) VALUES (?,?,?)', [texto, id, user], (err) =>{
+        connection.query('INSERT INTO comentarios (texto,publicacionId,usuarioId) VALUES (?,?,(SELECT id FROM usuarios WHERE alias = ?))', [texto, id, user], (err) =>{
             checkError(err);
             callback(201, {message:'Comentario creado correctamente'});
         })
