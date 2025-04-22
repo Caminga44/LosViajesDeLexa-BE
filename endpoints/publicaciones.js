@@ -2,15 +2,17 @@ const connection = require('./connection');
 
 function checkError(err){
     if(err){
-        return callback(500, {message: 'Error en la base de datos'})      
+        console.log(err)
+         callback(500, {message: 'Error en la base de datos'});
+         return;   
     }
 }
 
 module.exports = {
     get:(data, callback) =>{
         const ciudad = decodeURIComponent(data.id)
-        const query = 'SELECT c.nombre as ciudad, p.id as id, p.img as image, c.id as ciudadesId, p.provinciaId as provinciaId, p.text as text' +
-        'FROM publicaciones p' +
+        const query = 'SELECT c.nombre as ciudad, p.id as id, p.img as image, c.id as ciudadesId, p.provinciaId as provinciaId, p.text as text ' +
+        'FROM publicaciones p ' +
         'INNER JOIN ciudades c ON p.ciudadId = c.id';
         connection.query(query,ciudad, (err, rows) => {
             checkError(err);
@@ -26,7 +28,8 @@ module.exports = {
                     return callback(404, {message: 'Publicación no encontrada'})
                 }
             }else{
-                callback200, rows
+                callback(200, rows);
+                return;
             }
         })
     },

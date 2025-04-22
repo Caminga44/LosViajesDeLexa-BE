@@ -11,11 +11,11 @@ module.exports = {
     get: (data, callback) => {
         const {id} = data;
         if(id){
-            if(NaN(parseInt(id))){
+            if(isNaN(parseInt(id))){
                 callback(400, {message:'El id debe ser un número'});
                 return;
             }else{
-            connection.query('SELECT * FROM comentarios WHERE publicacionId = ?', [id], (err, rows) => {
+            connection.query('SELECT c.id AS id, c.texto AS texto, c.publicacionId AS publicacionId, u.alias AS usuario FROM comentarios c INNER JOIN usuarios u on c.usuarioId = u.id  WHERE publicacionId = ?', [id], (err, rows) => {
                 checkError(err);
                 callback(200, rows);
             })
@@ -32,7 +32,7 @@ module.exports = {
             callback (400, {message: 'El texto del comentario no puede ser nulo'})
             return;
         }
-        connection.query('INSERT INTO comentarios (texto,publicacioneId,usuario) VALUES (?,?,?)', [texto, id, user], (err) =>{
+        connection.query('INSERT INTO comentarios (texto,publicacionId,usuario) VALUES (?,?,?)', [texto, id, user], (err) =>{
             checkError(err);
             callback(201, {message:'Comentario creado correctamente'});
         })

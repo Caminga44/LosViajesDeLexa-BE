@@ -35,8 +35,8 @@ module.exports = {
             }else if(data.payload){
                 let find = false;
                 rows.filter((usuario) => {
-                   const user ={alias: data.payload.alias, clave: data.payload.clave}
-                   if(usuario.alias == user.alias && usuario.clave == data.payload.clave){
+                   const user ={alias: data.payload.alias, clave: data.payload.clave, deleted: data.payload.deleted}
+                   if(usuario.alias == user.alias && usuario.clave == user.clave && usuario.deleted != 1){
                     find = true;
                     callback(200, usuario)
                     return;
@@ -66,7 +66,7 @@ module.exports = {
     },
     delete: (data, callback) => {
         const {alias} = data.payload;
-        connection.query('UPDATE usuarios SET deleted = 1 WHERE nick = ?', alias, (err, _rows) =>{
+        connection.query('UPDATE usuarios SET deleted = 1 WHERE alias = ?', alias, (err, _rows) =>{
            checkError(err);
            callback(200, {message: 'Se ha eliminado el usuario'})
         })

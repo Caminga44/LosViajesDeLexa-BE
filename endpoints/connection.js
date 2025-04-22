@@ -33,9 +33,8 @@ connection.connect ((err) =>{
               console.log('Error al crear la tabla ciudades', err);
                 return;
             }
-            //, publicacionId INT, CONSTRAINT FK_PublicacionComentario FOREIGN KEY (publicacionId) REFERENCES publicaciones (id)
     });
-    connection.query('CREATE TABLE IF NOT EXISTS usuarios (alias VARCHAR(25) PRIMARY KEY, clave VARCHAR (25), admin BOOLEAN, deleted BOOLEAN)', (err) => {
+    connection.query('CREATE TABLE IF NOT EXISTS usuarios (id INT AUTO_INCREMENT PRIMARY KEY, alias VARCHAR(25), clave VARCHAR (25), admin BOOLEAN, deleted BOOLEAN, UNIQUE (alias))', (err) => {
         if(err){
             console.log('Error al crear la tabla usuarios', err);
             return
@@ -47,7 +46,7 @@ connection.connect ((err) =>{
             return;
         }
     })
-    connection.query ('CREATE TABLE IF NOT EXISTS comentarios (id INT AUTO_INCREMENT PRIMARY KEY, texto VARCHAR(500), publicacionId INT, usuario VARCHAR(25), CONSTRAINT FK_PublicacionComentario FOREIGN KEY (publicacionId) REFERENCES publicaciones(id), CONSTRAINT FK_UsuarioComentario FOREIGN KEY (usuario) REFERENCES usuarios(alias))', (err) =>{
+    connection.query ('CREATE TABLE IF NOT EXISTS comentarios (id INT AUTO_INCREMENT PRIMARY KEY, texto VARCHAR(500), publicacionId INT, usuarioId INT, CONSTRAINT FK_PublicacionComentario FOREIGN KEY (publicacionId) REFERENCES publicaciones(id), CONSTRAINT FK_UsuarioComentario FOREIGN KEY (usuarioId) REFERENCES usuarios(id))', (err) =>{
         if(err){
               console.log('Error al crear la tabla comentarios', err);
                 return;
