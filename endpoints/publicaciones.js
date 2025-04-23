@@ -11,7 +11,7 @@ function checkError(err){
 module.exports = {
     get:(data, callback) =>{
         const ciudad = decodeURIComponent(data.id)
-        const query = 'SELECT c.nombre as ciudad, p.id as id, p.img as image, c.id as ciudadesId, p.provinciaId as provinciaId, p.text as text ' +
+        const query = 'SELECT c.nombre as ciudad, p.id as id, p.img as image, c.id as ciudadesId, p.provinciaId as provinciaId, p.texto as text ' +
         'FROM publicaciones p ' +
         'INNER JOIN ciudades c ON p.ciudadId = c.id';
         connection.query(query,ciudad, (err, rows) => {
@@ -35,7 +35,7 @@ module.exports = {
     },
     post: (data, callback) => {
         const {texto, ciudad, provincia, img} = data.payload;
-        connection.query('INSERT INTO publicaciones SET text = ?, ciudadId = (SELECT id FROM ciudades WHERE nombre = ? LIMIT 1), provinciaId = (SELECT id FROM provincias WHERE nombre = ? LIMIT 1), img = ?',
+        connection.query('INSERT INTO publicaciones SET texto = ?, ciudadId = (SELECT id FROM ciudades WHERE nombre = ? LIMIT 1), provinciaId = (SELECT id FROM provincias WHERE nombre = ? LIMIT 1), img = ?',
             [texto, ciudad, provincia, img], (err, _) => {
                 checkError(err);
                 callback (201, {message: 'Se ha posteado la publicación'});
@@ -43,11 +43,12 @@ module.exports = {
     },
     put:(data, callback) => {
         const {id} = data;
+        const {texto, ciudad, provincia, img} = data.payload;
         if(isNaN(parseInt(id))){
             callback(400, {message: 'El id debe ser un número'});
             return;
         }else{
-            connection.query ('UPDATE publicaciones SET ? WHERE id = ?', [data.payload, id], (err,_rows) =>{
+            connection.query ('UPDATE publicaciones SET img = ?, texto = ?,  provinciaId = (SELECT id FROM provincias WHERE nombre = ? LIMIT 1), ciudadId= (SELECT id FROM ciudades WHERE nombre = ?) WHERE id = ?', [img, texto, provincia, ciudad, id], (err,_rows) =>{
                 checkError(err);
                 callback (204, {message: ' Se ha actualizado la publicación'})
             })

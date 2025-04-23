@@ -23,7 +23,12 @@ module.exports = {
         connection.query ( 'SELECT * FROM usuarios', (err, rows) =>{
             checkError(err);
             if(data.payload.creation){
-                const user = {alias: data.payload.alias, clave: data.payload.clave}
+                let user;
+                if(rows.length < 1) {
+                    user = {alias: data.payload.alias, clave: data.payload.clave, admin: 1}
+                } else {
+                    user = {alias: data.payload.alias, clave: data.payload.clave}
+                }
                 connection.query('INSERT INTO usuarios SET ?', user, (err, _rows) =>{
                     if(err){
                         callback(500, {message: 'La conexión ha fallado'})

@@ -40,13 +40,13 @@ connection.connect ((err) =>{
             return
         }
     });
-    connection.query('CREATE TABLE IF NOT EXISTS publicaciones (id INT AUTO_INCREMENT PRIMARY KEY, img VARCHAR(500), text VARCHAR (500), fav BOOLEAN, provinciaId INT, ciudadId INT, guardado BOOLEAN, CONSTRAINT FK_ProvinciaPublicacion FOREIGN KEY (provinciaId) REFERENCES provincias(id), CONSTRAINT FK_CiudadPublicacion FOREIGN KEY (ciudadId) REFERENCES ciudades(id))', (err) =>{
+    connection.query('CREATE TABLE IF NOT EXISTS publicaciones (id INT AUTO_INCREMENT PRIMARY KEY, img VARCHAR(500), texto VARCHAR (1000), provinciaId INT, ciudadId INT, CONSTRAINT FK_ProvinciaPublicacion FOREIGN KEY (provinciaId) REFERENCES provincias(id), CONSTRAINT FK_CiudadPublicacion FOREIGN KEY (ciudadId) REFERENCES ciudades(id))', (err) =>{
         if(err){
             console.log('Error al crear la tabla publicaciones', err);
             return;
         }
     })
-    connection.query ('CREATE TABLE IF NOT EXISTS comentarios (id INT AUTO_INCREMENT PRIMARY KEY, texto VARCHAR(500), publicacionId INT, usuarioId INT, CONSTRAINT FK_PublicacionComentario FOREIGN KEY (publicacionId) REFERENCES publicaciones(id), CONSTRAINT FK_UsuarioComentario FOREIGN KEY (usuarioId) REFERENCES usuarios(id))', (err) =>{
+    connection.query ('CREATE TABLE IF NOT EXISTS comentarios (id INT AUTO_INCREMENT PRIMARY KEY, texto VARCHAR(1000), publicacionId INT, usuarioId INT, CONSTRAINT FK_PublicacionComentario FOREIGN KEY (publicacionId) REFERENCES publicaciones(id), CONSTRAINT FK_UsuarioComentario FOREIGN KEY (usuarioId) REFERENCES usuarios(id))', (err) =>{
         if(err){
               console.log('Error al crear la tabla comentarios', err);
                 return;
