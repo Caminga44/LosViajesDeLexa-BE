@@ -48,7 +48,6 @@ module.exports = (req,res) => {
        
         let handler;
 
-        console.log("<<<<<<<<<<<<<<<<<<<< ", method, mainPath,data)
         if(mainPath === '') {
             handler = router.main;
         } else if(mainPath && router[mainPath][method]){
@@ -59,7 +58,6 @@ module.exports = (req,res) => {
         if(typeof handler==='function'){
             handler(data, callback = (statusCode = 200, payload = {})=> {
              const payloadClean = JSON.stringify(payload);
-                console.log(">>>>>>>>>>>>>>", payloadClean)
              res.setHeader('content-type', 'application/json');
              res.writeHead(statusCode);
              res.end(payloadClean);

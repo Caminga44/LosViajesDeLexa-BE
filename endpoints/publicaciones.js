@@ -2,7 +2,6 @@ const connection = require('./connection');
 
 function checkError(err){
     if(err){
-        console.log(err)
          callback(500, {message: 'Error en la base de datos'});
          return;   
     }
